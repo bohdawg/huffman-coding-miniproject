@@ -55,6 +55,7 @@ struct PQueue* pqueue_create(unsigned capacity) {
 
 void pqueue_free(struct PQueue* queue) {
     if (queue == NULL) return;
+    for(int i = 0; i < queue->size; i++) free(queue->arr[i]);//тимчасова річ
     free(queue->arr);
     free(queue);
 }
@@ -62,7 +63,7 @@ void pqueue_free(struct PQueue* queue) {
 void pqueue_insert(struct PQueue* queue, void* node, int (*cmp)(void*, void*)) {
     if (queue->size == queue->capacity) {
         unsigned new_capacity = queue->capacity * 2;
-        void** new_arr = realloc(queue->capacity, sizeof(void*) * new_capacity);
+        void** new_arr = realloc(queue->arr, sizeof(void*) * new_capacity);
         if (new_arr == NULL) return;
         queue->arr = new_arr;
         queue->capacity = new_capacity;
