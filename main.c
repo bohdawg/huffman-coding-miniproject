@@ -45,6 +45,12 @@ int main(int argc, char** argv) {
     for (int i = 0; i < queue->size; i++) {
         printf("%u\n", ((struct Node*)queue->arr[i])->frequency);//тимчасовий вивід
     }
+    putchar('\n');
+    for (int i = 0; i < CHAR_TABLE_SIZE; i++) {
+        if (frequencies[i] > 0) {
+            printf("'%c': %u\n", (unsigned char)i, frequencies[(unsigned char)i]);
+        }
+    }
     pqueue_free(queue);
     fclose(finput);
     return 0;
