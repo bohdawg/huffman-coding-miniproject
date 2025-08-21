@@ -42,15 +42,16 @@ int main(int argc, char** argv) {
             pqueue_insert(queue, newNode, frequencies_comparator);
         }
     }
-    for (int i = 0; i < queue->size; i++) {
-        printf("%u\n", ((struct Node*)queue->arr[i])->frequency);//тимчасовий вивід
+    while (queue->size > 1) {
+        struct Node* left = pqueue_poll(queue, frequencies_comparator);
+        struct Node* right = pqueue_poll(queue, frequencies_comparator);
+        struct Node* internalNode = (struct Node*)calloc(1, sizeof(struct Node));
+        internalNode->frequency = left->frequency + right->frequency;
+        internalNode->left = left;
+        internalNode->right = right;
+        pqueue_insert(queue, internalNode, frequencies_comparator);
     }
-    putchar('\n');
-    for (int i = 0; i < CHAR_TABLE_SIZE; i++) {
-        if (frequencies[i] > 0) {
-            printf("'%c': %u\n", (unsigned char)i, frequencies[(unsigned char)i]);
-        }
-    }
+    printf("%u: %u", queue->size, ((struct Node*)(queue->arr))->frequency);
     pqueue_free(queue);
     fclose(finput);
     return 0;
