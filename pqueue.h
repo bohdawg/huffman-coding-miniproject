@@ -7,6 +7,13 @@ struct PQueue {
     unsigned capacity;//поточна максимальна межа
 };
 
+struct Node {
+    unsigned char character;
+    unsigned int frequency;
+    struct Node* left;
+    struct Node* right;
+};//вузол мінімальної купи та дерева Гаффмана
+
 struct PQueue* pqueue_create(unsigned capacity);//створення черги з пріоритетом
 void pqueue_free(struct PQueue* queue);//звільнення пам'яті черги
 void pqueue_insert(struct PQueue* queue, void* node, int (*cmp)(void*, void*));//вставлення вузла в чергу
