@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include "pqueue.h"
 #include "bitreader.h"
 
@@ -23,11 +24,15 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    // 1. Зчитуємо "магічне" число (наприклад, 'HUFF')
-    char magic[4];
+    char magic[5] = {0};
     fread(magic, sizeof(char), 4, finput);
+    if (strncmp(magic, "HUFF", 4) != 0) {
+        fprintf(stderr, "Invalid file format (missing HUFF header)\n");
+        fclose(finput);
+        fclose(fout);
+        return 1;
+    }
 
-    // 2. Зчитуємо дерево
     uint32_t treeSize;
     uint8_t treePadding;
     fread(&treeSize, sizeof(uint32_t), 1, finput);
@@ -41,19 +46,17 @@ int main(int argc, char** argv) {
     free(tree_br);
     free(treeBuffer);
 
-    // 3. Зчитуємо padding та розмір стиснених даних
+    uint32_t dataSize;
+    fread(&dataSize, sizeof(uint32_t), 1, finput);
+
     uint8_t dataPadding;
     fread(&dataPadding, sizeof(uint8_t), 1, finput);
-
-    uint8_t dataSize;
-    fread(&dataSize, sizeof(uint8_t), 1, finput);
 
     uint8_t* dataBuffer = malloc(dataSize);
     fread(dataBuffer, sizeof(uint8_t), dataSize, finput);
 
     struct BitReader* data_br = bitreader_init(dataBuffer, dataSize, dataPadding);
 
-    // 4. Декодуємо
     struct Node* current = root;
     int bit;
     while ((bit = bitreader_read_bit(data_br)) != -1) {
@@ -65,11 +68,11 @@ int main(int argc, char** argv) {
         }
     }
 
-    // 5. Звільняємо ресурси
     fclose(finput);
     fclose(fout);
     free(data_br);
     free(dataBuffer);
-    free_tree(root); // Не забудь реалізувати
+    free_tree(root);
+
     return 0;
 }
